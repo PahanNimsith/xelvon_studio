@@ -342,3 +342,29 @@ html.theme-dark-glow .toast.hide {
 .anim-success-glow { animation: successGlow 600ms ease-out; }
 .anim-button-press { animation: buttonPress 150ms ease; }
 .anim-context-menu { animation: contextMenuSlide 200ms cubic-bezier(0.16, 1, 0.3, 1); }
+
+/* v16: softer modern backgrounds with normal-speed movement */
+.bg-blob-1 { animation-duration: 28s; }
+.bg-blob-2 { animation-duration: 34s; }
+.bg-blob-3 { animation-duration: 40s; }
+html.theme-light-glow body {
+  background:
+    radial-gradient(circle at 12% 8%, rgba(91,108,255,.16), transparent 34%),
+    radial-gradient(circle at 88% 18%, rgba(34,211,238,.14), transparent 30%),
+    linear-gradient(135deg, #f6f8ff 0%, #edf3ff 45%, #f8f4ff 100%);
+}
+html.theme-dark-glow body {
+  background:
+    radial-gradient(circle at 10% 12%, rgba(91,108,255,.18), transparent 32%),
+    radial-gradient(circle at 85% 18%, rgba(217,70,239,.12), transparent 28%),
+    #080912;
+}
+html.theme-light-glow #main,
+html.theme-dark-glow #main {
+  background: transparent;
+}
+html.theme-light-glow #views,
+html.theme-dark-glow #views {
+  position: relative;
+  z-index: 1;
+}

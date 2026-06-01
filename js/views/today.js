@@ -144,20 +144,8 @@ function _todayLogEntry(p) {
   var statusLabel = isAutoFail ? 'auto-failed' : status;
   var statusCls   = isAutoFail ? 'tlog-failed' : 'tlog-'+status;
 
-  // Restore rules:
-  // - auto-fail / failed: NO restore
-  // - done: restore only within 2 days of completedAt
-  // - skipped: unlimited restore
-  var canRecover = false;
-  if (!isAutoFail) {
-    if (isSkipped) {
-      canRecover = true;
-    } else if (isDone) {
-      var completedMs = p.completedAt ? new Date(p.completedAt).getTime() : 0;
-      var twoDaysMs = 2 * 24 * 60 * 60 * 1000;
-      canRecover = completedMs > 0 && (Date.now() - completedMs) < twoDaysMs;
-    }
-  }
+  // v16: every logged Today item can be restored to today's pending plan.
+  var canRecover = status !== 'pending';
 
   var restoreBtn = canRecover
     ? '<button class="today-recover-btn" style="margin-left:auto;flex-shrink:0;" onclick="event.stopPropagation();recoverTodayPlan(\''+p.id+'\')">'+
@@ -294,7 +282,7 @@ function recoverTodayPlan(id) {
   _todayTab = 'plan';
   renderToday();
   updateBadges();
-  toast('Task restored to today's plan','success',3500,'restore');
+  toast("Task restored to today's plan",'success',3500,'restore');
 }
 
 // v13: Enter delete mode
@@ -335,9 +323,12 @@ function clearSelectedTodayLogs() {
     return;
   }
   
-  if (!confirm('Delete '+toRemove.length+' selected entries? This cannot be undone.')) return;
+  if (!confirm('Move '+toRemove.length+' selected entries to Trash?')) return;
   
+  if (!state.trash) state.trash = [];
   toRemove.forEach(function(id) {
+    var plan = (state.todayPlans||[]).find(function(p){ return p.id === id; });
+    if (plan) state.trash.push({ type:'todayPlan', plan:JSON.parse(JSON.stringify(plan)), deletedAt:new Date().toISOString() });
     state.todayPlans = (state.todayPlans||[]).filter(function(p){ return p.id !== id; });
   });
   
@@ -347,5 +338,5 @@ function clearSelectedTodayLogs() {
   saveState();
   renderToday();
   updateBadges();
-  toast('Deleted '+toRemove.length+' entries','success',3500,'trash');
+  toast('Moved '+toRemove.length+' entries to trash','success',3500,'trash');
 }

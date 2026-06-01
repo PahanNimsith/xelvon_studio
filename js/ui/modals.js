@@ -213,6 +213,8 @@ function confirmDeleteAccount() {
 
 /* Trash icon helper */
 function _trashIcon(type) {
+  if (type === 'document') type = 'doc';
+  if (type === 'todayPlan') type = 'plan';
   var icons = {
     task:   '<svg viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>',
     phase:  '<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="18"/><rect x="14" y="3" width="7" height="12"/></svg>',
@@ -245,8 +247,9 @@ function renderTrashModal() {
     if (item.type==='phase') { title=item.phase.title; meta=item.phase.tasks.length+' tasks'; typeLabel='Phase'; }
     else if (item.type==='task') { title=item.task.text; meta='From: '+(item.phaseTitle||'?'); typeLabel='Task'; }
     else if (item.type==='link') { title=item.link.title||item.link.url; meta=tryGetDomain(item.link.url)||''; typeLabel='Link'; }
-    else if (item.type==='doc') { title=item.doc.title||'Untitled'; meta='Document'; typeLabel='Doc'; }
-    else if (item.type==='folder') { title=item.folder.name; meta=(item.children||[]).length+' docs'; typeLabel='Folder'; }
+    else if (item.type==='doc' || item.type==='document') { var docItem = item.doc || item.document || {}; title=docItem.title||'Untitled'; meta='Document'; typeLabel='Doc'; }
+    else if (item.type==='folder') { title=item.folder.name; meta=((item.children||[]).length || (item.documentCount||0))+' docs'; typeLabel='Folder'; }
+    else if (item.type==='todayPlan' || item.type==='plan') { var planItem = item.plan || {}; title=planItem.text||'Today plan'; meta=planItem.date||''; typeLabel='Today Plan'; }
     if (!title) return '';
     var isSelected = _trashSelected.includes(i);
     return '<div class="trash-item-row'+(isSelected?' selected':'')+'" data-idx="'+i+'">'+
@@ -329,8 +332,8 @@ function _recoverItemSilent(idx) {
     const rlink = JSON.parse(JSON.stringify(item.link));
     if (state.links.find(function(l){ return l.title===rlink.title; })) rlink.title='Recovered - '+rlink.title;
     state.links.push(rlink);
-  } else if (item.type === 'doc') {
-    const rdoc = JSON.parse(JSON.stringify(item.doc));
+  } else if (item.type === 'doc' || item.type === 'document') {
+    const rdoc = JSON.parse(JSON.stringify(item.doc || item.document));
     if (state.documents.find(function(d){ return d.title===rdoc.title; })) rdoc.title='Recovered - '+rdoc.title;
     state.documents.push(rdoc);
   } else if (item.type === 'folder') {
@@ -341,6 +344,11 @@ function _recoverItemSilent(idx) {
       var rdoc = JSON.parse(JSON.stringify(dc));
       state.documents.push(rdoc);
     });
+  } else if (item.type === 'todayPlan' || item.type === 'plan') {
+    if (!state.todayPlans) state.todayPlans = [];
+    var rplan = JSON.parse(JSON.stringify(item.plan));
+    if (!rplan.id || state.todayPlans.some(function(p){ return p.id === rplan.id; })) rplan.id = uid();
+    state.todayPlans.push(rplan);
   } else if (item.type === 'task') {
     let phase = state.phases.find(function(p){ return p.id===item.phaseId; });
     if (!phase) phase = state.phases.find(function(p){ return p.title===item.phaseTitle; });

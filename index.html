@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <title>Xelvon Studio v15</title>
+  <title>Xelvon Studio v16</title>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%235B6CFF'/><path d='M16 4L6 9l10 5 10-5-10-5z' fill='none' stroke='white' stroke-width='1.8' stroke-linejoin='round'/><path d='M6 19l10 5 10-5' fill='none' stroke='white' stroke-width='1.8'/><path d='M6 14l10 5 10-5' fill='none' stroke='white' stroke-width='1.8'/></svg>">
   <script id="xelvon-data" type="application/json"></script>
   <link rel="stylesheet" href="css/variables.css">
@@ -38,22 +38,7 @@
   <div class="splash-logo" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></div>
   <div class="splash-name">Xelvon Studio</div>
   <div class="splash-tagline">Your personal workspace</div>
-  <!-- v14: Progress summary card — populated by JS on reload/relog -->
-  <div class="splash-progress-card" id="splash-progress-card">
-    <div class="splash-prog-label">
-      <span class="splash-prog-title">Overall Progress</span>
-      <span class="splash-prog-pct" id="splash-prog-pct">0%</span>
-    </div>
-    <div class="splash-prog-track"><div class="splash-prog-fill" id="splash-prog-fill"></div></div>
-    <div class="splash-stat-row">
-      <div class="splash-stat s-done"><div class="splash-stat-num" id="splash-stat-done">0</div><div class="splash-stat-lbl">Done</div></div>
-      <div class="splash-stat s-pending"><div class="splash-stat-num" id="splash-stat-pending">0</div><div class="splash-stat-lbl">Pending</div></div>
-      <div class="splash-stat s-overdue"><div class="splash-stat-num" id="splash-stat-overdue">0</div><div class="splash-stat-lbl">Overdue</div></div>
-      <div class="splash-stat s-phases"><div class="splash-stat-num" id="splash-stat-phases">0</div><div class="splash-stat-lbl">Phases</div></div>
-    </div>
-  </div>
-  <!-- fallback plain bar for first-time users -->
-  <div class="splash-bar-wrap" id="splash-bar-wrap" aria-hidden="true"><div class="splash-bar"></div></div>
+  <!-- v16: Splash keeps only logo + three-dot loading animation. Dashboard owns progress animations. -->
   <div class="splash-dots" aria-hidden="true"><div class="splash-dot a1"></div><div class="splash-dot a2"></div><div class="splash-dot a3"></div></div>
 </div>
 
@@ -537,5 +522,3 @@
 <script src="js/app.js"></script>
 </body>
 </html>
-</content>
-<parameter name="taskNameActive">Writing index.html
