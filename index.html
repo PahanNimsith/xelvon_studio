@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en" class="theme-light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Xelvon Studio v15</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%235B6CFF'/><path d='M16 4L6 9l10 5 10-5-10-5z' fill='none' stroke='white' stroke-width='1.8' stroke-linejoin='round'/><path d='M6 19l10 5 10-5' fill='none' stroke='white' stroke-width='1.8'/><path d='M6 14l10 5 10-5' fill='none' stroke='white' stroke-width='1.8'/></svg>">
+  <script id="xelvon-data" type="application/json"></script>
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/sidebar.css">
+  <link rel="stylesheet" href="css/topbar.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/board.css">
+  <link rel="stylesheet" href="css/today.css">
+  <link rel="stylesheet" href="css/links.css">
+  <link rel="stylesheet" href="css/docs.css">
+  <link rel="stylesheet" href="css/modals.css">
+  <link rel="stylesheet" href="css/pomodoro.css">
+  <link rel="stylesheet" href="css/toast.css">
+  <link rel="stylesheet" href="css/utilities.css">
+  <link rel="stylesheet" href="css/auth.css">
+</head>
+<body>
+<!-- v14: Animated background blobs — visible only in glow themes -->
+<div class="bg-blob bg-blob-1" aria-hidden="true"></div>
+<div class="bg-blob bg-blob-2" aria-hidden="true"></div>
+<div class="bg-blob bg-blob-3" aria-hidden="true"></div>
+
+<!-- AMBIENT ORBS -->
+<div class="orb" id="orb1" aria-hidden="true"></div>
+<div class="orb" id="orb2" aria-hidden="true"></div>
+<div class="orb" id="orb3" aria-hidden="true"></div>
+
+<!-- SPLASH -->
+<div id="splash" role="status" aria-label="Loading Xelvon Studio">
+  <div class="splash-logo" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></div>
+  <div class="splash-name">Xelvon Studio</div>
+  <div class="splash-tagline">Your personal workspace</div>
+  <!-- v14: Progress summary card — populated by JS on reload/relog -->
+  <div class="splash-progress-card" id="splash-progress-card">
+    <div class="splash-prog-label">
+      <span class="splash-prog-title">Overall Progress</span>
+      <span class="splash-prog-pct" id="splash-prog-pct">0%</span>
+    </div>
+    <div class="splash-prog-track"><div class="splash-prog-fill" id="splash-prog-fill"></div></div>
+    <div class="splash-stat-row">
+      <div class="splash-stat s-done"><div class="splash-stat-num" id="splash-stat-done">0</div><div class="splash-stat-lbl">Done</div></div>
+      <div class="splash-stat s-pending"><div class="splash-stat-num" id="splash-stat-pending">0</div><div class="splash-stat-lbl">Pending</div></div>
+      <div class="splash-stat s-overdue"><div class="splash-stat-num" id="splash-stat-overdue">0</div><div class="splash-stat-lbl">Overdue</div></div>
+      <div class="splash-stat s-phases"><div class="splash-stat-num" id="splash-stat-phases">0</div><div class="splash-stat-lbl">Phases</div></div>
+    </div>
+  </div>
+  <!-- fallback plain bar for first-time users -->
+  <div class="splash-bar-wrap" id="splash-bar-wrap" aria-hidden="true"><div class="splash-bar"></div></div>
+  <div class="splash-dots" aria-hidden="true"><div class="splash-dot a1"></div><div class="splash-dot a2"></div><div class="splash-dot a3"></div></div>
+</div>
+
+<!-- AUTH OVERLAY -->
+<div id="auth-overlay" style="display:none;" role="dialog" aria-modal="true" aria-label="Sign in to Xelvon Studio">
+  <div class="auth-card">
+    <div class="auth-logo" aria-hidden="true">
+      <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+    </div>
+    <div class="auth-title">Xelvon Studio</div>
+    <div class="auth-sub">Your personal workspace</div>
+
+    <div class="auth-tabs" role="tablist">
+      <button class="auth-tab active" data-tab="login" onclick="switchAuthTab('login')" role="tab" aria-selected="true">Sign In</button>
+      <button class="auth-tab" data-tab="signup" onclick="switchAuthTab('signup')" role="tab" aria-selected="false">Sign Up</button>
+    </div>
+
+    <!-- LOGIN FORM -->
+    <div id="auth-login-form" class="auth-form">
+      <input id="login-email" class="auth-input" type="email" placeholder="Email address" autocomplete="email"
+        onkeydown="if(event.key==='Enter')document.getElementById('login-pass').focus()">
+      <input id="login-pass" class="auth-input" type="password" placeholder="Password" autocomplete="current-password"
+        onkeydown="if(event.key==='Enter')authLogin()">
+      <div id="login-error" class="auth-error" role="alert"></div>
+      <button id="login-btn" class="auth-btn" onclick="authLogin()">Sign In</button>
+    </div>
+
+    <!-- SIGNUP FORM -->
+    <div id="auth-signup-form" class="auth-form" style="display:none;">
+      <input id="signup-name" class="auth-input" type="text" placeholder="Display name" autocomplete="name"
+        onkeydown="if(event.key==='Enter')document.getElementById('signup-email').focus()">
+      <input id="signup-email" class="auth-input" type="email" placeholder="Email address" autocomplete="email"
+        onkeydown="if(event.key==='Enter')document.getElementById('signup-pass').focus()">
+      <input id="signup-pass" class="auth-input" type="password" placeholder="Password (min 6 characters)" autocomplete="new-password"
+        onkeydown="if(event.key==='Enter')authSignup()">
+      <div id="signup-error" class="auth-error" role="alert"></div>
+      <button id="signup-btn" class="auth-btn" onclick="authSignup()">Create Account</button>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="app" style="opacity:0;transition:opacity .4s ease;">
+
+  <!-- SIDEBAR -->
+  <nav id="sidebar" aria-label="Main navigation"></nav>
+
+  <!-- MAIN AREA -->
+  <div id="main">
+    <!-- TOPBAR -->
+    <header id="topbar" role="banner"></header>
+
+    <!-- VIEWS -->
+    <main id="views">
+      <div class="view active" id="view-dashboard">
+        <div id="dash-content"></div>
+      </div>
+      <div class="view" id="view-board" style="padding:0;display:none;flex-direction:column;">
+        <div id="board-topbar" class="board-topbar">
+          <h2 class="board-topbar-title">Project Board</h2>
+          <div style="flex:1;"></div>
+          <div class="view-toggle" role="group" aria-label="Board view">
+            <button id="vt-kanban" class="vt-btn active" onclick="setBoardView('kanban')" aria-pressed="true">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="5" height="19"/><rect x="10" y="3" width="5" height="11"/><rect x="17" y="3" width="5" height="15"/></svg>Kanban
+            </button>
+            <button id="vt-list" class="vt-btn" onclick="setBoardView('list')" aria-pressed="false">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>List
+            </button>
+          </div>
+          <button class="btn btn-primary" style="font-size:.78rem;padding:7px 14px;display:flex;align-items:center;gap:6px;" onclick="openNewPhaseModal()">
+            <svg style="width:13px;height:13px;stroke:#fff;fill:none;stroke-width:2.5;" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>New Phase
+          </button>
+        </div>
+        <div id="board-prog-strip" class="board-prog-strip"></div>
+        <div id="board-content" style="flex:1;overflow:hidden;display:flex;flex-direction:column;"></div>
+        <div id="board-archive-strip" class="board-archive-strip" style="display:none;"></div>
+      </div>
+      <div class="view" id="view-today">
+        <div id="today-content"></div>
+      </div>
+      <div class="view" id="view-links">
+        <div class="section-head" id="links-section-head" style="margin-bottom:16px;">
+          <h2 style="font-size:.95rem;font-weight:800;">Saved Links</h2>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <button id="links-edit-toggle" class="btn btn-ghost" style="font-size:.72rem;padding:4px 10px;" onclick="toggleLinksEditMode()" title="Toggle edit mode">
+              <svg style="width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2;margin-right:4px;" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Edit
+            </button>
+            <button class="btn btn-primary" style="font-size:.72rem;padding:4px 12px;" onclick="openLinkModal()">+ Add Link</button>
+          </div>
+        </div>
+        <div id="links-content"></div>
+      </div>
+      <div class="view" id="view-docs" style="padding:0;overflow:hidden;">
+        <div class="docs-layout" id="docs-layout" style="padding:0;gap:0;height:100%;"></div>
+      </div>
+      <div class="view" id="view-scratch">
+        <div id="scratch-content"></div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- ACTIVE TIMER BAR -->
+<div id="timer-bar" role="status" aria-live="polite">
+  <svg style="width:14px;height:14px;stroke:#fff;fill:none;stroke-width:2;flex-shrink:0;" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+  <span class="timer-bar-label" id="timer-task-label">Task</span>
+  <span class="timer-bar-time" id="timer-display">00:00</span>
+  <button class="timer-bar-stop" onclick="stopTimer()">Stop</button>
+</div>
+
+<!-- POMODORO WIDGET -->
+<div id="pomo-widget" role="timer" aria-label="Pomodoro timer">
+  <button class="pomo-close-btn" onclick="togglePomodoro()" aria-label="Close Pomodoro"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+  <div class="pomo-label">POMODORO</div>
+  <div class="pomo-timer" id="pomo-display" aria-live="off">25:00</div>
+  <div class="pomo-mode" id="pomo-mode">Work Session</div>
+  <div class="pomo-controls">
+    <button id="pomo-start-btn" class="pomo-btn start" onclick="togglePomo()" aria-label="Start timer">Start</button>
+    <button class="pomo-btn" onclick="resetPomo()" aria-label="Reset timer">Reset</button>
+  </div>
+  <div class="pomo-progress" aria-hidden="true"><div class="pomo-prog-fill" id="pomo-prog" style="width:0%"></div></div>
+  <div class="pomo-sep"></div>
+  <div class="pomo-settings-row"><label for="pomo-set-work">Work (min)</label><input id="pomo-set-work" type="number" min="1" max="120" value="25" aria-label="Work duration in minutes"></div>
+  <div class="pomo-settings-row"><label for="pomo-set-break">Break (min)</label><input id="pomo-set-break" type="number" min="1" max="60" value="5" aria-label="Break duration in minutes"></div>
+  <button class="pomo-set-apply" onclick="applyPomoSettings()">Apply Settings</button>
+</div>
+
+<!-- SEARCH OVERLAY -->
+<div id="search-overlay" role="dialog" aria-label="Search" aria-modal="true" onclick="if(event.target.id==='search-overlay')closeSearch(event)">
+  <div class="search-box" onclick="event.stopPropagation()">
+    <div class="search-input-wrap">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="search" id="search-input" placeholder="Search... (Command + K)" oninput="doSearch(this.value)" aria-label="Search workspace" autofocus>
+      <span class="search-esc" onclick="closeSearch(event)" role="button" tabindex="0" aria-label="Close search">ESC</span>
+    </div>
+    <div class="search-results" id="search-results" role="listbox"><div class="search-empty">Start typing to search...</div></div>
+  </div>
+</div>
+
+<!-- TOAST ZONE -->
+<div id="toast-zone" aria-live="polite" aria-atomic="false"></div>
+
+<!-- DOCS CONTEXT MENU -->
+<div id="docs-ctx-menu" style="display:none;position:fixed;z-index:9999;">
+  <button class="dctx-item" id="ctx-new-doc"    onclick="filesNewDoc()"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>New Document</button>
+  <button class="dctx-item" id="ctx-new-doc-in" onclick="filesNewDoc()" style="display:none;"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>New Doc in Folder</button>
+  <button class="dctx-item" id="ctx-new-folder" onclick="filesCtxOpen()" style="display:none;"><svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>New Folder</button>
+  <div class="dctx-sep"></div>
+  <button class="dctx-item" onclick="filesCtxRename()"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Rename</button>
+  <button class="dctx-item danger" onclick="filesCtxDelete()"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>Move to Trash</button>
+</div>
+
+<!-- MODALS -->
+
+<!-- TASK MODAL -->
+<div id="task-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="task-modal-title" onclick="handleOverlayClose(event,'task-modal')">
+  <div class="modal-box wide">
+    <div class="modal-head">
+      <h3 id="task-modal-title">New Task</h3>
+      <button class="modal-close" onclick="closeModal('task-modal')" aria-label="Close"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label" for="task-text">Task Name *</label>
+        <input id="task-text" class="form-input" placeholder="What needs to be done?" onkeydown="if(event.key==='Enter')saveTask()">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="task-phase">Phase</label>
+          <select id="task-phase" class="form-select"></select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="task-priority">Priority</label>
+          <select id="task-priority" class="form-select">
+            <option value="high">High</option>
+            <option value="med" selected>Medium</option>
+            <option value="low">Low</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="task-due">Due Date</label>
+        <input id="task-due" type="date" class="form-input">
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="task-desc">Description</label>
+        <textarea id="task-desc" class="form-textarea" placeholder="Optional notes, context or details..."></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Tags</label>
+        <div id="task-tags-wrap"></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Checklist</label>
+        <div id="task-checklist-wrap"></div>
+      </div>
+      <div id="task-time-info" style="display:none;font-size:.75rem;color:var(--text2);padding:6px 10px;background:var(--surface2);border-radius:var(--r-sm);border:1px solid var(--border);"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal('task-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveTask()">Save Task</button>
+    </div>
+  </div>
+</div>
+
+<!-- PHASE MODAL -->
+<div id="phase-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="phase-modal-title" onclick="handleOverlayClose(event,'phase-modal')">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h3 id="phase-modal-title">New Phase</h3>
+      <button class="modal-close" onclick="closeModal('phase-modal')" aria-label="Close"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label" for="phase-name">Phase Name *</label>
+        <input id="phase-name" class="form-input" placeholder="e.g. Phase 1: Foundation">
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="phase-desc">Description</label>
+        <input id="phase-desc" class="form-input" placeholder="What is this phase about?">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="phase-start">Start Date</label>
+          <input id="phase-start" type="date" class="form-input">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Deadline</label>
+          <div style="display:flex;gap:6px;">
+            <input id="phase-dl-val" type="number" class="form-input" value="3" min="1" style="width:70px;" aria-label="Deadline value">
+            <select id="phase-dl-unit" class="form-select" aria-label="Deadline unit">
+              <option value="days">Days</option>
+              <option value="weeks">Weeks</option>
+              <option value="months" selected>Months</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Color</label>
+        <input type="hidden" id="phase-color-selected">
+        <div id="phase-color-row" class="color-picker-row"></div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-danger" onclick="if(_phaseEditId)deletePhase(_phaseEditId)" style="margin-right:auto;" id="phase-delete-btn">Delete Phase</button>
+      <button class="btn btn-ghost" onclick="closeModal('phase-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="savePhase()">Save Phase</button>
+    </div>
+  </div>
+</div>
+
+<!-- LINK MODAL -->
+<div id="link-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="link-modal-title" onclick="handleOverlayClose(event,'link-modal')">
+  <div class="modal-box sm">
+    <div class="modal-head">
+      <h3 id="link-modal-title">Add Link</h3>
+      <button class="modal-close" onclick="closeModal('link-modal')" aria-label="Close"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="link-edit-idx">
+      <div class="form-group">
+        <label class="form-label" for="link-url">URL *</label>
+        <input id="link-url" class="form-input" placeholder="https://..." type="url">
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="link-title">Title</label>
+        <div class="link-title-wrap" id="link-title-wrap">
+          <input id="link-title" class="form-input" placeholder="Link name (optional)">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="link-desc">Description</label>
+        <input id="link-desc" class="form-input" placeholder="Short note about this link">
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="link-tags">Tags <span style="font-weight:400;">(comma separated)</span></label>
+        <input id="link-tags" class="form-input" placeholder="design, reference, tools">
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal('link-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveLink()">Save Link</button>
+    </div>
+  </div>
+</div>
+
+<!-- FOLDER MODAL -->
+<div id="folder-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="folder-modal-title" onclick="handleOverlayClose(event,'folder-modal')">
+  <div class="modal-box sm">
+    <div class="modal-head">
+      <h3 id="folder-modal-title">New Folder</h3>
+      <button class="modal-close" onclick="closeModal('folder-modal')" aria-label="Close"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="folder-edit-id">
+      <input type="hidden" id="folder-color-selected">
+      <div class="form-group">
+        <label class="form-label" for="folder-name-inp">Folder Name *</label>
+        <input id="folder-name-inp" class="form-input" placeholder="e.g. References">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Color</label>
+        <div id="folder-color-row" class="folder-color-row"></div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal('folder-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="filesCommitNewFolder()">Save Folder</button>
+    </div>
+  </div>
+</div>
+
+<!-- PLANNER MODAL -->
+<div id="planner-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="planner-modal-title" onclick="handleOverlayClose(event,'planner-modal')">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h3 id="planner-modal-title">Daily Planner</h3>
+      <button class="modal-close" onclick="closeModal('planner-modal')" aria-label="Close"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="planner-phase-id">
+      <input type="hidden" id="plan-edit-id">
+      <div class="planner-list" id="planner-list"></div>
+      <div class="form-group" style="border-top:1px solid var(--border);padding-top:12px;">
+        <label class="form-label">Add New Plan</label>
+        <div style="display:flex;gap:8px;margin-bottom:8px;">
+          <input id="plan-date" type="date" class="form-input" style="width:auto;">
+          <input id="plan-title" class="form-input" placeholder="Plan title *" style="flex:1;" onkeydown="if(event.key==='Enter')addPlanEntry()">
+        </div>
+        <textarea id="plan-text" class="form-textarea" placeholder="Optional details or notes..." style="min-height:56px;"></textarea>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal('planner-modal')">Close</button>
+      <button class="btn btn-primary" onclick="addPlanEntry()">Add Plan</button>
+    </div>
+  </div>
+</div>
+
+<!-- PROFILE MODAL -->
+<div id="profile-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="profile-modal-title" onclick="handleOverlayClose(event,'profile-modal')">
+  <div class="modal-box sm">
+    <div class="modal-head">
+      <h3 id="profile-modal-title">Your Profile</h3>
+      <button class="modal-close" onclick="closeModal('profile-modal')" aria-label="Close"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <div class="avatar-upload" id="avatar-upload" onclick="document.getElementById('avatar-file').click()" role="button" tabindex="0" aria-label="Upload avatar photo">
+        <span id="avatar-initials" style="font-size:1.6rem;font-weight:800;">?</span>
+        <div class="avatar-upload-hint" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>
+      </div>
+      <button id="remove-photo-btn" class="btn btn-ghost" style="font-size:.75rem;margin:-4px auto 8px;display:none;" onclick="removeAvatar()">Remove Photo</button>
+      <input type="file" id="avatar-file" accept="image/*" style="display:none;" onchange="handleAvatar(event)">
+      <div class="form-group">
+        <label class="form-label" for="prof-name">Display Name</label>
+        <input id="prof-name" class="form-input" placeholder="Your name">
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="prof-role">Role / Title</label>
+        <input id="prof-role" class="form-input" placeholder="e.g. Full Stack Developer">
+      </div>
+    </div>
+    <div class="modal-foot" style="flex-direction:column;gap:8px;">
+      <div style="display:flex;gap:8px;width:100%;">
+        <button class="btn btn-ghost" onclick="closeModal('profile-modal')">Cancel</button>
+        <button class="btn btn-primary" onclick="saveProfile()">Save Profile</button>
+      </div>
+      <!-- DELETE ACCOUNT SECTION -->
+      <div style="border-top:1px solid var(--border);padding-top:10px;margin-top:4px;width:100%;">
+        <button class="btn" style="background:none;color:var(--danger);border:1px solid rgba(239,68,68,.3);width:100%;font-size:.78rem;" onclick="openDeleteAccountPanel()">Delete My Account</button>
+      </div>
+      <!-- DELETE ACCOUNT CONFIRM PANEL -->
+      <div id="delete-account-panel" style="display:none;background:rgba(239,68,68,.05);border:1px solid rgba(239,68,68,.2);border-radius:var(--r-md);padding:14px;width:100%;">
+        <p style="font-size:.75rem;color:var(--text);margin-bottom:10px;line-height:1.5;">This will permanently delete your profile and export all your data. Type <b>remove my account</b> below to confirm.</p>
+        <input type="password" id="del-pass" class="form-input" placeholder="Password (stored locally)" style="margin-bottom:8px;font-size:.78rem;" oninput="checkDeleteConfirmReady()">
+        <input type="text" id="del-confirm-text" class="form-input" placeholder='Type: remove my account' style="margin-bottom:10px;font-size:.78rem;" oninput="checkDeleteConfirmReady()">
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-ghost" style="flex:1;font-size:.75rem;" onclick="closeDeleteAccountPanel()">Cancel</button>
+          <button id="del-confirm-btn" class="btn" style="flex:1;font-size:.75rem;background:var(--danger);color:#fff;border:none;" disabled onclick="confirmDeleteAccount()">Confirm Delete</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIRM MODAL -->
+<div id="confirm-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="confirm-modal-title" onclick="handleOverlayClose(event,'confirm-modal')">
+  <div class="modal-box sm">
+    <div class="modal-head">
+      <h3 id="confirm-modal-title">Are you sure?</h3>
+      <button class="modal-close" onclick="closeModal('confirm-modal')" aria-label="Close"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <p id="confirm-modal-msg"></p>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="_confirmNo()">Cancel</button>
+      <button id="confirm-modal-btn" class="btn btn-danger" onclick="_confirmYes()">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<!-- TRASH MODAL -->
+<div id="trash-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="trash-modal-title" onclick="handleOverlayClose(event,'trash-modal')">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h3 id="trash-modal-title">Recycle Bin</h3>
+      <div class="trash-modal-actions" style="display:flex;align-items:center;gap:8px;margin-left:auto;">
+        <label class="trash-select-all-wrap" style="display:none;align-items:center;gap:5px;font-size:.72rem;color:var(--text2);cursor:pointer;">
+          <input type="checkbox" id="trash-select-all" onchange="trashToggleSelectAll(this.checked)">
+          <span>Select All</span>
+        </label>
+      </div>
+      <button class="modal-close" onclick="closeModal('trash-modal')" aria-label="Close"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="modal-body" id="trash-content"></div>
+    <div class="modal-foot" id="trash-modal-foot">
+      <button class="btn btn-danger" onclick="emptyTrash()" style="margin-right:auto;">Empty Bin</button>
+      <div id="trash-bulk-actions" style="display:none;gap:8px;">
+        <button class="btn" style="background:rgba(16,185,129,.1);color:var(--success);border:1px solid rgba(16,185,129,.2);font-size:.75rem;" onclick="trashBulkRecover()">Recover Selected (<span id="trash-bulk-count">0</span>)</button>
+        <button class="btn" style="background:rgba(239,68,68,.1);color:var(--danger);border:1px solid rgba(239,68,68,.2);font-size:.75rem;" onclick="trashBulkDelete()">Delete Selected</button>
+      </div>
+      <button class="btn btn-ghost" onclick="closeModal('trash-modal')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- BACKUP MODAL -->
+<div id="backup-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="backup-modal-title" onclick="handleOverlayClose(event,'backup-modal')">
+  <div class="modal-box sm">
+    <div class="modal-head">
+      <h3 id="backup-modal-title">Backup</h3>
+      <button class="modal-close" onclick="closeModal('backup-modal')" aria-label="Close"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <div class="backup-info" style="background:rgba(16,185,129,0.07);border:1px solid rgba(16,185,129,0.2);border-radius:var(--r-sm);padding:10px 14px;display:flex;align-items:flex-start;gap:10px;margin-bottom:12px;">
+        <svg viewBox="0 0 24 24" aria-hidden="true" style="width:18px;height:18px;flex-shrink:0;stroke:var(--success);fill:none;stroke-width:2;margin-top:1px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <div class="backup-info-text" style="color:var(--success);font-size:.78rem;">Data is saved locally in your browser. Always download a backup to avoid data loss.</div>
+      </div>
+      <div class="backup-actions">
+        <button class="backup-action-btn" onclick="exportJSON()">
+          <div class="bab-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></div>
+          <div class="bab-info"><h4>Export JSON</h4><p>Download a backup of all your data</p></div>
+        </button>
+        <button class="backup-action-btn" onclick="document.getElementById('import-json-file').click()">
+          <div class="bab-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>
+          <div class="bab-info">
+            <h4>Restore from JSON</h4>
+            <p style="color:var(--danger);font-size:.72rem;margin-top:3px;">Warning: This will permanently replace your current workspace with the backup. All current data will be lost.</p>
+          </div>
+        </button>
+        <input type="file" id="import-json-file" accept=".json" style="display:none;" onchange="importJSON(event)">
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SCRIPTS -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="js/constants.js"></script>
+<script src="js/state.js"></script>
+<script src="js/storage.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/navigation.js"></script>
+<script src="js/ui/toast.js"></script>
+<script src="js/ui/modals.js"></script>
+<script src="js/controllers/timer.js"></script>
+<script src="js/controllers/pomodoro.js"></script>
+<script src="js/controllers/theme.js"></script>
+<script src="js/controllers/search.js"></script>
+<script src="js/views/dashboard.js"></script>
+<script src="js/views/board.js"></script>
+<script src="js/views/today.js"></script>
+<script src="js/views/links.js"></script>
+<script src="js/views/docs.js"></script>
+<script src="js/views/scratch.js"></script>
+<script src="js/views/task-modal.js"></script>
+<script src="js/views/phase-modal.js"></script>
+<script src="js/views/planner-modal.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
+</content>
+<parameter name="taskNameActive">Writing index.html

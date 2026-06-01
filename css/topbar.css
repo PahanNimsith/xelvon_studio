@@ -1,0 +1,22 @@
+/* ══════════════════════════════════════════════════════
+   TOPBAR — Xelvon Studio v11
+══════════════════════════════════════════════════════ */
+.tb-title{font-size:1rem;font-weight:800;color:var(--text);white-space:nowrap;}
+.tb-sep{color:var(--border);font-size:1.2rem;line-height:1;}
+.tb-search{flex:1;max-width:340px;position:relative;}
+.tb-search input{width:100%;padding:8px 12px 8px 36px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);font-size:.82rem;color:var(--text);transition:all .2s;outline:none;}
+.tb-search input:focus{border-color:var(--brand);background:var(--surface);box-shadow:0 0 0 3px var(--brand-dim);}
+.tb-search-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);width:15px;height:15px;stroke:var(--text3);fill:none;stroke-width:2;}
+.tb-spacer{flex:1;}
+.tb-btn{display:flex;align-items:center;gap:6px;padding:7px 13px;border-radius:var(--r-sm);font-size:.78rem;font-weight:700;cursor:pointer;transition:all .2s;white-space:nowrap;}
+.tb-btn-primary{background:var(--brand);color:#fff;border:none;box-shadow:0 3px 10px var(--brand-glow);}
+.tb-btn-primary:hover{background:var(--brand-h);transform:translateY(-1px);}
+.tb-btn-ghost{background:transparent;color:var(--text2);border:1px solid var(--border);}
+.tb-btn-ghost:hover{background:var(--surface2);color:var(--text);}
+.tb-btn svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2.2;}
+
+.save-pill{display:flex;align-items:center;gap:5px;padding:5px 10px;border-radius:var(--r-sm);font-size:.72rem;font-weight:700;background:rgba(16,185,129,.1);color:var(--success);border:1px solid rgba(16,185,129,.2);cursor:pointer;}
+.save-pill svg{width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2.8;}
+.save-pill.unsaved{background:rgba(245,158,11,.1);color:var(--warning);border-color:rgba(245,158,11,.2);animation:savePulse 2s ease infinite;}
+.save-pill.error{background:rgba(239,68,68,.1);color:var(--danger);border-color:rgba(239,68,68,.2);}
+@keyframes savePulse{0%,100%{opacity:1}50%{opacity:.6}}

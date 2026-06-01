@@ -1,0 +1,72 @@
+/* ══════════════════════════════════════════════════════
+   THEME VARIABLES — Xelvon Studio v14
+   v14 Features:
+   - Modern light/dark with blur & color effects
+   - Enhanced glow themes with backdrop blur
+   - Normal themes without blur (light/dark)
+══════════════════════════════════════════════════════ */
+:root {
+  --brand:#5B6CFF; --brand-h:#4554E0; --brand-dim:rgba(91,108,255,.12); --brand-glow:rgba(91,108,255,.28);
+  --success:#10B981; --warning:#F59E0B; --danger:#EF4444; --info:#3B82F6;
+  --pri-high:#EF4444; --pri-med:#F59E0B; --pri-low:#10B981;
+  --bg:#F4F5FB; --surface:#FFFFFF; --surface2:#F8F9FD; --border:#E8EBF4;
+  --text:#1A1D2E; --text2:#6B7280; --text3:#9CA3AF;
+  --sb-bg:#1E1F2E; --sb-text:#9DA3B4; --sb-hover:rgba(255,255,255,.06);
+  --sb-active-bg:rgba(91,108,255,.18); --sb-active-text:#fff;
+  --sh-sm:0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);
+  --sh-md:0 4px 16px rgba(0,0,0,.08),0 2px 6px rgba(0,0,0,.04);
+  --sh-lg:0 12px 36px rgba(0,0,0,.1),0 4px 12px rgba(0,0,0,.06);
+  --sh-xl:0 24px 64px rgba(0,0,0,.14);
+  --r-sm:8px; --r-md:12px; --r-lg:16px; --r-xl:24px;
+  --sb-w:220px; --sb-w-collapsed:62px; --tb-h:60px;
+  --input-bg:#fff; --input-border:#D1D5E0;
+  /* v14: Blur and glow variables */
+  --blur-amount:0px;
+  --glow-color:transparent;
+  --card-glow:none;
+}
+
+/* v14: Standard Dark - no blur/effects */
+html.theme-dark {
+  --bg:#0F1018; --surface:#181926; --surface2:#13141F; --border:#252738;
+  --text:#E4E7F5; --text2:#7880A0; --text3:#454D6A;
+  --sb-bg:#0C0D18; --sh-sm:0 1px 3px rgba(0,0,0,.4); --sh-md:0 4px 16px rgba(0,0,0,.5);
+  --sh-lg:0 12px 36px rgba(0,0,0,.6); --sh-xl:0 24px 64px rgba(0,0,0,.7);
+  --input-bg:rgba(255,255,255,.05); --input-border:rgba(255,255,255,.1);
+  --blur-amount:0px;
+  --glow-color:transparent;
+  --card-glow:none;
+}
+
+/* v14: Modern Light Glow - glassmorphism + animated bg */
+html.theme-light-glow {
+  --bg:transparent;
+  --surface:rgba(255,255,255,.55);
+  --surface2:rgba(248,249,253,.65);
+  --border:rgba(200,205,220,.45);
+  --blur-amount:14px;
+  --glow-color:rgba(91,108,255,.1);
+  --card-glow:0 0 0 1px rgba(255,255,255,.6) inset, 0 4px 24px rgba(91,108,255,.10);
+  --sh-sm:0 2px 12px rgba(91,108,255,.10),0 1px 3px rgba(0,0,0,.04);
+  --sh-md:0 6px 24px rgba(91,108,255,.13),0 2px 8px rgba(0,0,0,.05);
+  --sh-lg:0 16px 48px rgba(91,108,255,.15),0 4px 16px rgba(0,0,0,.06);
+  --sb-bg:rgba(20,22,40,.82);
+  --hover-glow:0 0 0 2px rgba(91,108,255,.25), 0 4px 20px rgba(91,108,255,.15);
+}
+
+/* v14: Modern Dark Glow - glassmorphism + animated bg */
+html.theme-dark-glow {
+  --bg:transparent;
+  --surface:rgba(20,22,40,.62);
+  --surface2:rgba(14,15,28,.72);
+  --border:rgba(91,108,255,.18);
+  --text:#E4E7F5; --text2:#7880A0; --text3:#454D6A;
+  --sb-bg:rgba(8,9,20,.88);
+  --sh-sm:0 1px 6px rgba(0,0,0,.6); --sh-md:0 4px 24px rgba(0,0,0,.7);
+  --sh-lg:0 16px 48px rgba(0,0,0,.8); --sh-xl:0 24px 64px rgba(0,0,0,.9);
+  --input-bg:rgba(255,255,255,.07); --input-border:rgba(91,108,255,.25);
+  --blur-amount:18px;
+  --glow-color:rgba(91,108,255,.14);
+  --card-glow:0 0 0 1px rgba(91,108,255,.15) inset, 0 4px 28px rgba(91,108,255,.12);
+  --hover-glow:0 0 0 2px rgba(91,108,255,.35), 0 4px 24px rgba(91,108,255,.2);
+}

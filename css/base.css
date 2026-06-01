@@ -1,0 +1,344 @@
+/* ══════════════════════════════════════════════════════
+   BASE & RESET — Xelvon Studio v13
+══════════════════════════════════════════════════════ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;overflow:hidden;}
+
+/* v13: Hide scrollbar during splash animation */
+html.splash-active{overflow:hidden !important;}
+html.splash-active::-webkit-scrollbar{display:none !important;width:0 !important;}
+html.splash-active{-ms-overflow-style:none;scrollbar-width:none;}
+
+button{border:none;cursor:pointer;font-family:inherit;font-size:inherit;}
+input,textarea,select{font-family:inherit;font-size:inherit;color:var(--text);}
+a{color:inherit;text-decoration:none;}
+
+/* v13: Custom scrollbar styling - grey color */
+::-webkit-scrollbar{width:6px;height:6px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:rgba(128,128,128,0.4);border-radius:10px;}
+::-webkit-scrollbar-thumb:hover{background:rgba(128,128,128,0.6);}
+::placeholder{color:var(--text3);}
+
+/* ══════════════════════════════════════════════════════
+   v13 ANIMATIONS — Modern, Smooth & Delightful
+══════════════════════════════════════════════════════ */
+
+/* Core fade & movement */
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes toastIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+@keyframes toastOut{to{opacity:0;transform:translateX(20px)}}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 var(--brand-glow)}50%{box-shadow:0 0 0 6px transparent}}
+@keyframes splashLogo{from{opacity:0;transform:scale(.5) rotate(-10deg)}to{opacity:1;transform:scale(1) rotate(0)}}
+@keyframes splashFade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+@keyframes splashBarFill{to{width:100%}}
+@keyframes dotPulse{0%,100%{background:rgba(255,255,255,.15)}50%{background:var(--brand)}}
+@keyframes modalIn{from{opacity:0;transform:scale(.96) translateY(8px)}to{opacity:1;transform:scale(1) translateY(0)}}
+
+/* v13: Task & Item animations */
+@keyframes itemSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes itemSlideOut {
+  to {
+    opacity: 0;
+    transform: translateX(12px);
+  }
+}
+
+@keyframes checkboxPop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
+
+/* v13: Progress bar animation - only triggers on actual changes */
+@keyframes progressFillOnce {
+  from { width: var(--progress-from, 0%); }
+  to { width: var(--progress-to, 100%); }
+}
+
+@keyframes successGlow {
+  0% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 8px rgba(16, 185, 129, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+  }
+}
+
+@keyframes copyPulse {
+  0%, 100% { background: var(--surface); }
+  50% { background: rgba(16, 185, 129, 0.1); }
+}
+
+@keyframes cutFade {
+  from { opacity: 1; }
+  to { opacity: 0.4; }
+}
+
+@keyframes dragHover {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+@keyframes contextMenuSlide {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes buttonPress {
+  0% { transform: scale(1); }
+  50% { transform: scale(0.95); }
+  100% { transform: scale(1); }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    max-height: 0;
+    transform: translateY(-12px);
+  }
+  to {
+    opacity: 1;
+    max-height: 500px;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 1;
+    max-height: 500px;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    max-height: 0;
+    transform: translateY(-12px);
+  }
+}
+
+/* v14: Smooth transitions */
+.smooth-width { transition: width 280ms cubic-bezier(0.4, 0, 0.2, 1); }
+.smooth-height { transition: height 280ms cubic-bezier(0.4, 0, 0.2, 1); }
+.smooth-all { transition: all 200ms ease; }
+.smooth-opacity { transition: opacity 200ms ease; }
+.smooth-transform { transition: transform 200ms ease; }
+
+/* v13: Progress bar locked state - no animation */
+.progress-locked .bps-fill,
+.progress-locked .ph-prog-fill {
+  transition: none !important;
+  animation: none !important;
+}
+
+/* ══════════════════════════════════════════════════════
+   v14: ANIMATED BACKGROUND — Modern glow themes only
+══════════════════════════════════════════════════════ */
+#bg-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+  display: none;
+}
+html.theme-light-glow #bg-canvas,
+html.theme-dark-glow #bg-canvas {
+  display: block;
+}
+
+/* Solid bg for low-end themes */
+html:not(.theme-light-glow):not(.theme-dark-glow) #app {
+  background: var(--bg);
+}
+html.theme-light-glow #app,
+html.theme-dark-glow #app {
+  background: transparent;
+}
+
+/* Animated blobs */
+.bg-blob {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(72px);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 0;
+  will-change: transform;
+  transition: opacity 0.6s ease;
+}
+html.theme-light-glow .bg-blob,
+html.theme-dark-glow .bg-blob {
+  opacity: 1;
+}
+.bg-blob-1 {
+  width: 520px; height: 520px;
+  animation: blobDrift1 14s ease-in-out infinite alternate;
+}
+.bg-blob-2 {
+  width: 420px; height: 420px;
+  animation: blobDrift2 18s ease-in-out infinite alternate;
+}
+.bg-blob-3 {
+  width: 340px; height: 340px;
+  animation: blobDrift3 12s ease-in-out infinite alternate;
+}
+
+html.theme-light-glow .bg-blob-1 { background: radial-gradient(circle, rgba(91,108,255,.22), transparent 70%); top: -80px; left: -60px; }
+html.theme-light-glow .bg-blob-2 { background: radial-gradient(circle, rgba(139,92,246,.18), transparent 70%); bottom: -60px; right: -40px; }
+html.theme-light-glow .bg-blob-3 { background: radial-gradient(circle, rgba(34,211,238,.14), transparent 70%); top: 40%; left: 50%; }
+html.theme-light-glow body { background: #eef0fa; }
+
+html.theme-dark-glow .bg-blob-1 { background: radial-gradient(circle, rgba(91,108,255,.28), transparent 70%); top: -100px; left: -80px; }
+html.theme-dark-glow .bg-blob-2 { background: radial-gradient(circle, rgba(139,92,246,.22), transparent 70%); bottom: -80px; right: -60px; }
+html.theme-dark-glow .bg-blob-3 { background: radial-gradient(circle, rgba(34,211,238,.16), transparent 70%); top: 35%; left: 45%; }
+html.theme-dark-glow body { background: #080912; }
+
+@keyframes blobDrift1 {
+  0%   { transform: translate(0, 0) scale(1); }
+  33%  { transform: translate(60px, 40px) scale(1.08); }
+  66%  { transform: translate(30px, 80px) scale(0.96); }
+  100% { transform: translate(80px, 20px) scale(1.04); }
+}
+@keyframes blobDrift2 {
+  0%   { transform: translate(0, 0) scale(1); }
+  33%  { transform: translate(-50px, -30px) scale(1.06); }
+  66%  { transform: translate(-20px, -70px) scale(0.94); }
+  100% { transform: translate(-70px, -10px) scale(1.02); }
+}
+@keyframes blobDrift3 {
+  0%   { transform: translate(0, 0) scale(1); }
+  50%  { transform: translate(-40px, 50px) scale(1.1); }
+  100% { transform: translate(40px, -30px) scale(0.92); }
+}
+
+/* ══════════════════════════════════════════════════════
+   v14: GLASSMORPHISM CARDS — Modern themes only
+══════════════════════════════════════════════════════ */
+html.theme-light-glow .card,
+html.theme-dark-glow .card,
+html.theme-light-glow .stat-card,
+html.theme-dark-glow .stat-card,
+html.theme-light-glow .task-card,
+html.theme-dark-glow .task-card,
+html.theme-light-glow .today-plan-card,
+html.theme-dark-glow .today-plan-card,
+html.theme-light-glow .today-log-entry,
+html.theme-dark-glow .today-log-entry,
+html.theme-light-glow .link-card,
+html.theme-dark-glow .link-card {
+  backdrop-filter: blur(var(--blur-amount));
+  -webkit-backdrop-filter: blur(var(--blur-amount));
+  box-shadow: var(--card-glow);
+  transition: box-shadow 0.25s ease, transform 0.2s ease, border-color 0.2s ease;
+}
+
+/* Enhanced card hover — glow themes */
+html.theme-light-glow .card:hover,
+html.theme-dark-glow .card:hover,
+html.theme-light-glow .stat-card:hover,
+html.theme-dark-glow .stat-card:hover,
+html.theme-light-glow .link-card:hover,
+html.theme-dark-glow .link-card:hover {
+  box-shadow: var(--hover-glow);
+  transform: translateY(-2px);
+  border-color: rgba(91,108,255,.35);
+}
+
+html.theme-light-glow .task-card:hover,
+html.theme-dark-glow .task-card:hover {
+  box-shadow: var(--hover-glow);
+  transform: translateY(-2px);
+}
+
+/* Sidebar glass — modern themes */
+html.theme-light-glow #sidebar,
+html.theme-dark-glow #sidebar {
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-right: 1px solid rgba(255,255,255,.08);
+}
+
+/* Topbar glass — modern themes */
+html.theme-light-glow #topbar,
+html.theme-dark-glow #topbar {
+  backdrop-filter: blur(var(--blur-amount));
+  -webkit-backdrop-filter: blur(var(--blur-amount));
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+/* Enhanced button hover — modern themes */
+html.theme-light-glow .btn-primary:hover,
+html.theme-dark-glow .btn-primary:hover,
+html.theme-light-glow .tb-btn:hover,
+html.theme-dark-glow .tb-btn:hover {
+  box-shadow: 0 0 0 3px rgba(91,108,255,.3), 0 4px 20px rgba(91,108,255,.35);
+  transform: translateY(-1px);
+}
+
+/* Input glow — modern themes */
+html.theme-light-glow input:focus,
+html.theme-dark-glow input:focus,
+html.theme-light-glow textarea:focus,
+html.theme-dark-glow textarea:focus,
+html.theme-light-glow select:focus,
+html.theme-dark-glow select:focus {
+  box-shadow: 0 0 0 3px rgba(91,108,255,.22);
+}
+
+/* ══════════════════════════════════════════════════════
+   v14: GLASS TOAST — Modern themes only
+══════════════════════════════════════════════════════ */
+html.theme-light-glow .toast,
+html.theme-dark-glow .toast {
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  background: var(--surface);
+  box-shadow: var(--card-glow), 0 8px 32px rgba(0,0,0,.18);
+  border: 1px solid var(--border);
+  animation: glassToastIn .4s cubic-bezier(.34,1.56,.64,1);
+}
+html.theme-light-glow .toast.hide,
+html.theme-dark-glow .toast.hide {
+  animation: glassToastOut .3s ease forwards;
+}
+@keyframes glassToastIn {
+  0%   { opacity:0; transform:translateX(80px) scale(0.85); filter:blur(4px); }
+  100% { opacity:1; transform:translateX(0) scale(1); filter:blur(0); }
+}
+@keyframes glassToastOut {
+  0%   { opacity:1; transform:translateX(0) scale(1); filter:blur(0); }
+  100% { opacity:0; transform:translateX(80px) scale(0.85); filter:blur(4px); }
+}
+
+/* Utility animation classes */
+.anim-fade-in { animation: fadeIn 300ms ease; }
+.anim-fade-up { animation: fadeUp 350ms cubic-bezier(0.34, 1.56, 0.64, 1); }
+.anim-slide-in { animation: itemSlideIn 200ms ease; }
+.anim-slide-out { animation: itemSlideOut 200ms ease forwards; }
+.anim-checkbox-pop { animation: checkboxPop 300ms cubic-bezier(0.68, -0.55, 0.27, 1.55); }
+.anim-success-glow { animation: successGlow 600ms ease-out; }
+.anim-button-press { animation: buttonPress 150ms ease; }
+.anim-context-menu { animation: contextMenuSlide 200ms cubic-bezier(0.16, 1, 0.3, 1); }
