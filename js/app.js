@@ -142,31 +142,27 @@ var _splashProgressTimer = null, _splashProgressPct = 0;
 function startSplashProgress() {
   var card = document.getElementById('splash-progress-card');
   var bar = document.getElementById('splash-bar');
-  var fill = document.getElementById('splash-prog-fill');
   if (card) card.classList.add('visible');
   if (_splashProgressTimer) return;
   _splashProgressPct = 0;
+  // slower, smoother approach toward 65% so splash is visible longer
   _splashProgressTimer = setInterval(function(){
-    // ease toward 80%
-    _splashProgressPct += Math.max(1, Math.round((80 - _splashProgressPct) * 0.12));
-    if (_splashProgressPct >= 80) _splashProgressPct = 80;
+    _splashProgressPct += Math.max(1, Math.round((65 - _splashProgressPct) * 0.07));
+    if (_splashProgressPct >= 65) _splashProgressPct = 65;
     if (bar) bar.style.width = _splashProgressPct + '%';
-    if (fill) fill.style.width = _splashProgressPct + '%';
-    if (_splashProgressPct >= 80) {
+    if (_splashProgressPct >= 65) {
       clearInterval(_splashProgressTimer); _splashProgressTimer = null;
     }
-  }, 120);
+  }, 200);
 }
 
 function finishSplashProgress() {
   var bar = document.getElementById('splash-bar');
-  var fill = document.getElementById('splash-prog-fill');
   var card = document.getElementById('splash-progress-card');
   if (_splashProgressTimer) { clearInterval(_splashProgressTimer); _splashProgressTimer = null; }
-  // animate to 100%
-  if (bar) { bar.style.transition = 'width 300ms ease'; bar.style.width = '100%'; }
-  if (fill){ fill.style.transition = 'width 300ms ease'; fill.style.width = '100%'; }
-  setTimeout(function(){ if (card) card.classList.remove('visible'); }, 350);
+  // animate to 100% more slowly for nicer transition
+  if (bar) { bar.style.transition = 'width 700ms ease'; bar.style.width = '100%'; }
+  setTimeout(function(){ if (card) card.classList.remove('visible'); }, 900);
 }
 
 function _showSplashProgress() {
