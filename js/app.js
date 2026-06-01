@@ -50,6 +50,7 @@ function _themeDotTitle(t) {
 document.addEventListener('DOMContentLoaded', async function() {
   // v13: Add class to hide scrollbar during splash
   document.documentElement.classList.add('splash-active');
+  startSplashProgress();
   
   var isAuthed = await checkAuthSession();
 
@@ -71,6 +72,9 @@ document.addEventListener('DOMContentLoaded', async function() {
 
 async function bootApp() {
   hideAuthOverlay();
+
+  // ensure splash progress advances during boot
+  startSplashProgress();
 
   var sbData = await loadFromSupabase();
   if (sbData && sbData.phases) {
@@ -123,6 +127,7 @@ async function bootApp() {
   setTimeout(function(){
     var splash = document.getElementById('splash');
     var app    = document.getElementById('app');
+    finishSplashProgress();
     if (splash) splash.classList.add('hide');
     if (app)    app.style.opacity = '1';
     setTimeout(function(){ 
@@ -130,6 +135,38 @@ async function bootApp() {
       document.documentElement.classList.remove('splash-active');
     }, 550);
   }, 1050);
+}
+
+/* Splash progress helpers */
+var _splashProgressTimer = null, _splashProgressPct = 0;
+function startSplashProgress() {
+  var card = document.getElementById('splash-progress-card');
+  var bar = document.getElementById('splash-bar');
+  var fill = document.getElementById('splash-prog-fill');
+  if (card) card.classList.add('visible');
+  if (_splashProgressTimer) return;
+  _splashProgressPct = 0;
+  _splashProgressTimer = setInterval(function(){
+    // ease toward 80%
+    _splashProgressPct += Math.max(1, Math.round((80 - _splashProgressPct) * 0.12));
+    if (_splashProgressPct >= 80) _splashProgressPct = 80;
+    if (bar) bar.style.width = _splashProgressPct + '%';
+    if (fill) fill.style.width = _splashProgressPct + '%';
+    if (_splashProgressPct >= 80) {
+      clearInterval(_splashProgressTimer); _splashProgressTimer = null;
+    }
+  }, 120);
+}
+
+function finishSplashProgress() {
+  var bar = document.getElementById('splash-bar');
+  var fill = document.getElementById('splash-prog-fill');
+  var card = document.getElementById('splash-progress-card');
+  if (_splashProgressTimer) { clearInterval(_splashProgressTimer); _splashProgressTimer = null; }
+  // animate to 100%
+  if (bar) { bar.style.transition = 'width 300ms ease'; bar.style.width = '100%'; }
+  if (fill){ fill.style.transition = 'width 300ms ease'; fill.style.width = '100%'; }
+  setTimeout(function(){ if (card) card.classList.remove('visible'); }, 350);
 }
 
 function _showSplashProgress() {

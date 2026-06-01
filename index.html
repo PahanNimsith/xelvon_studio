@@ -40,6 +40,15 @@
   <div class="splash-tagline">Your personal workspace</div>
   <!-- v16: Splash keeps only logo + three-dot loading animation. Dashboard owns progress animations. -->
   <div class="splash-dots" aria-hidden="true"><div class="splash-dot a1"></div><div class="splash-dot a2"></div><div class="splash-dot a3"></div></div>
+    <!-- Progress bar (no percent) -->
+    <div class="splash-progress-card" id="splash-progress-card" aria-hidden="true">
+      <div class="splash-prog-track" aria-hidden="true">
+        <div class="splash-prog-fill" id="splash-prog-fill" style="width:0%"></div>
+      </div>
+      <div class="splash-bar-wrap" id="splash-bar-wrap">
+        <div class="splash-bar" id="splash-bar"></div>
+      </div>
+    </div>
 </div>
 
 <!-- AUTH OVERLAY -->
