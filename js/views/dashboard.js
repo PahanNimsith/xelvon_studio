@@ -29,7 +29,8 @@ function renderDashboard() {
   // Collect all tasks from phases using correct field name
   const all = [];
   state.phases.forEach(function(ph){
-    ph.tasks.forEach(function(t){ all.push({task:t, phase:ph}); });
+    (ph.tasks||[]).forEach(function(t){ all.push({task:t, phase:ph}); });
+    (ph.completedTasks||[]).forEach(function(t){ all.push({task:t, phase:ph, completed:true}); });
   });
   const total    = all.length;
   const done     = all.filter(function(x){ return x.task.checked; }).length;
@@ -45,15 +46,16 @@ function renderDashboard() {
 
   // Phase progress rows
   const phaseRows = state.phases.map(function(ph) {
-    const t = ph.tasks.length;
-    const d = ph.tasks.filter(function(tk){ return tk.checked; }).length;
+    const phaseTasks = (ph.tasks||[]).concat(ph.completedTasks||[]);
+    const t = phaseTasks.length;
+    const d = phaseTasks.filter(function(tk){ return tk.checked; }).length;
     const pct = t > 0 ? Math.round(d/t*100) : 0;
     return '<div class="phase-prog">'+
       '<div class="phase-prog-head">'+
         '<span class="phase-prog-name"><span class="phase-dot" style="background:'+esc(ph.color)+'"></span>'+esc(ph.title)+'</span>'+
         '<span class="phase-prog-pct">'+d+'/'+t+' &nbsp;'+pct+'%</span>'+
       '</div>'+
-      '<div class="prog-bar"><div class="prog-fill" style="width:'+pct+'%;background:'+esc(ph.color)+'"></div></div>'+
+      '<div class="prog-bar"><div class="prog-fill dash-anim-fill" data-target="'+pct+'" style="width:0%;background:'+esc(ph.color)+'"></div></div>'+
     '</div>';
   }).join('') || '<div style="font-size:.8rem;color:var(--text3);">No phases yet</div>';
 
@@ -101,13 +103,13 @@ function renderDashboard() {
   cont.innerHTML =
     '<h2>'+greeting+(state.profile.name?', '+state.profile.name.split(' ')[0]:'')+'</h2>'+
     '<p class="sub">Here is your workspace overview</p>'+
-    '<div class="dash-total-prog"><span class="dtp-label">Overall Progress</span><div class="dtp-bar"><div class="dtp-fill" style="width:'+tPct+'%"></div></div><span class="dtp-pct">'+tPct+'%</span></div>'+
+    '<div class="dash-total-prog"><span class="dtp-label">Overall Progress</span><div class="dtp-bar"><div class="dtp-fill dash-anim-fill" data-target="'+tPct+'" style="width:0%"></div></div><span class="dtp-pct dash-anim-num" data-target="'+tPct+'" data-suffix="%">0%</span></div>'+
     '<div class="dash-stats">'+
-      '<div class="stat-card s-total"><div class="s-icon"><svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div><div class="s-num">'+total+'</div><div class="s-label">Total Tasks</div></div>'+
-      '<div class="stat-card s-done"><div class="s-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><div class="s-num done">'+done+'</div><div class="s-label">Completed</div></div>'+
-      '<div class="stat-card s-today"><div class="s-icon"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div><div class="s-num today">'+todayTasks.length+'</div><div class="s-label">Due Today</div></div>'+
-      '<div class="stat-card s-over"><div class="s-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div><div class="s-num over">'+overdue.length+'</div><div class="s-label">Overdue</div></div>'+
-      '<div class="stat-card s-todaytask"><div class="s-icon"><svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="m9 12 2 2 4-4"/></svg></div><div class="s-num todaytask">'+todayPlanCount+'</div><div class="s-label">Today\'s Plan</div></div>'+
+      '<div class="stat-card s-total"><div class="s-icon"><svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div><div class="s-num dash-anim-num" data-target="'+total+'">0</div><div class="s-label">Total Tasks</div></div>'+
+      '<div class="stat-card s-done"><div class="s-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><div class="s-num done dash-anim-num" data-target="'+done+'">0</div><div class="s-label">Completed</div></div>'+
+      '<div class="stat-card s-today"><div class="s-icon"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div><div class="s-num today dash-anim-num" data-target="'+todayTasks.length+'">0</div><div class="s-label">Due Today</div></div>'+
+      '<div class="stat-card s-over"><div class="s-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div><div class="s-num over dash-anim-num" data-target="'+overdue.length+'">0</div><div class="s-label">Overdue</div></div>'+
+      '<div class="stat-card s-todaytask"><div class="s-icon"><svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="m9 12 2 2 4-4"/></svg></div><div class="s-num todaytask dash-anim-num" data-target="'+todayPlanCount+'">0</div><div class="s-label">Today\'s Plan</div></div>'+
     '</div>'+
     '<div class="dash-grid">'+
       '<div class="dash-left">'+
@@ -135,6 +137,31 @@ function renderDashboard() {
         '</div>'+
       '</div>'+
     '</div>';
+
+  requestAnimationFrame(animateDashboardOverview);
+}
+
+function animateDashboardOverview() {
+  var root = document.getElementById('dash-content');
+  if (!root) return;
+  root.querySelectorAll('.dash-anim-fill').forEach(function(el) {
+    var target = Math.max(0, Math.min(100, parseFloat(el.dataset.target || '0')));
+    el.style.width = '0%';
+    requestAnimationFrame(function(){ el.style.width = target + '%'; });
+  });
+  root.querySelectorAll('.dash-anim-num').forEach(function(el) {
+    var target = parseInt(el.dataset.target || '0', 10);
+    var suffix = el.dataset.suffix || '';
+    var start = null;
+    function tick(ts) {
+      if (!start) start = ts;
+      var progress = Math.min((ts - start) / 900, 1);
+      var eased = 1 - Math.pow(1 - progress, 3);
+      el.textContent = Math.round(target * eased) + suffix;
+      if (progress < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  });
 }
 
 function getGreeting() {

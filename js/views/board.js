@@ -605,7 +605,7 @@ function toggleTaskToday(phId, taskId) {
     saveState();
     updateBadges();
     renderBoard();
-    toast('Removed from today's plan','info',3500,'plan');
+    toast("Removed from today's plan",'info',3500,'plan');
   } else {
     // Add to today's plan
     state.todayPlans.push({
@@ -620,7 +620,7 @@ function toggleTaskToday(phId, taskId) {
     saveState();
     updateBadges();
     renderBoard();
-    toast('Added to today's plan','success',3500,'plan');
+    toast("Added to today's plan",'success',3500,'plan');
   }
 }
 

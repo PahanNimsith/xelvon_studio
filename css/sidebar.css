@@ -424,3 +424,27 @@
   pointer-events: none;
   transform: translateX(-8px);
 }
+
+/* v16: thinner active theme ring and polished collapsed profile/tooltip */
+.sb-theme-dot.active {
+  box-shadow: 0 0 0 1px var(--brand), 0 0 0 3px rgba(91,108,255,.14);
+  transform: scale(1.04);
+}
+.sb-avatar { box-sizing: border-box; }
+.sb-avatar img { border-radius: inherit; display: block; }
+#sidebar.collapsed .sb-avatar-wrap,
+#sidebar.collapsed .sb-avatar {
+  width: 34px;
+  height: 34px;
+}
+#sidebar.collapsed .sb-profile-v13 {
+  padding: 8px 6px;
+}
+#sidebar.collapsed .sb-profile-v13:hover .sb-tooltip {
+  opacity: 1;
+  transform: translateY(-50%) translateX(0);
+}
+.sb-logo-tooltip,
+.sb-tooltip {
+  box-shadow: 0 10px 24px rgba(91,108,255,.26);
+}

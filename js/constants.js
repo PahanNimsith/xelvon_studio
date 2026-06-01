@@ -4,7 +4,7 @@
    - Removed "Cannot restore" messages
    - Version update
 ══════════════════════════════════════════════════════ */
-const APP_VERSION = '14';
+const APP_VERSION = '16';
 const THEMES = ['theme-light','theme-dark','theme-light-glow','theme-dark-glow'];
 const PHASE_COLORS = ['#5B6CFF','#22D3EE','#F59E0B','#10B981','#EF4444','#D946EF','#F97316','#06B6D4','#8B5CF6','#EC4899'];
 const FOLDER_COLORS = ['#5B6CFF','#22D3EE','#F59E0B','#10B981','#EF4444','#D946EF','#F97316','#8B5CF6','#EC4899','#6B7280'];

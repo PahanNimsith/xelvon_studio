@@ -283,3 +283,17 @@
 .files-list .file-card-meta {
   font-size: .68rem;
 }
+
+/* v16: Reliable scrolling for large file collections */
+#view-docs { min-height: 0; }
+#view-docs .docs-layout { min-height: 0; }
+#files-browser {
+  height: 100%;
+  min-height: 0;
+}
+.files-grid {
+  min-height: 0;
+  padding: 2px 6px 32px 2px;
+  scrollbar-gutter: stable;
+}
+.files-list .file-card-name { min-width: 0; }

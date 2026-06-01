@@ -106,8 +106,10 @@ async function bootApp() {
   });
   if (autoFailed > 0) { saveState(); }
 
-  /* v14: Populate splash progress card if user has data */
-  _showSplashProgress();
+  /* v16: Splash stays minimal; progress animation happens on Dashboard. */
+
+  var appBootEl = document.getElementById('app');
+  if (appBootEl) appBootEl.classList.toggle('sidebar-collapsed', !!state.sidebarCollapsed);
 
   renderSidebar();
   renderTopbar();
@@ -127,63 +129,13 @@ async function bootApp() {
       if(splash) splash.style.display='none'; 
       document.documentElement.classList.remove('splash-active');
     }, 550);
-  }, 2000);
+  }, 1050);
 }
 
 function _showSplashProgress() {
-  var phases = state.phases || [];
-  if (!phases.length) return; // first-time user — keep plain bar
-
-  /* Compute stats across all phases */
-  var totalTasks = 0, doneTasks = 0, pendingTasks = 0, overdueTasks = 0;
-  var now = new Date();
-  phases.forEach(function(ph) {
-    var tasks = (ph.tasks || []).concat(ph.completedTasks || []);
-    tasks.forEach(function(t) {
-      totalTasks++;
-      if (t.checked) {
-        doneTasks++;
-      } else {
-        if (t.due && new Date(t.due) < now) overdueTasks++;
-        else pendingTasks++;
-      }
-    });
-  });
-
-  var pct = totalTasks > 0 ? Math.round(doneTasks / totalTasks * 100) : 0;
-
-  /* Show card, hide plain bar */
-  var card = document.getElementById('splash-progress-card');
-  var barWrap = document.getElementById('splash-bar-wrap');
-  if (card) card.classList.add('visible');
-  if (barWrap) barWrap.classList.add('hidden');
-
-  /* Set stat numbers immediately */
-  var el = function(id) { return document.getElementById(id); };
-  if (el('splash-stat-done'))    el('splash-stat-done').textContent    = doneTasks;
-  if (el('splash-stat-pending')) el('splash-stat-pending').textContent = pendingTasks;
-  if (el('splash-stat-overdue')) el('splash-stat-overdue').textContent = overdueTasks;
-  if (el('splash-stat-phases'))  el('splash-stat-phases').textContent  = phases.length;
-
-  /* Animate progress bar + counter after short delay */
-  setTimeout(function() {
-    var fill = el('splash-prog-fill');
-    var pctEl = el('splash-prog-pct');
-    if (fill) fill.style.width = pct + '%';
-
-    /* Animate counter 0 → pct */
-    var start = 0, duration = 1100, startTime = null;
-    function tick(ts) {
-      if (!startTime) startTime = ts;
-      var prog = Math.min((ts - startTime) / duration, 1);
-      var eased = 1 - Math.pow(1 - prog, 3);
-      var cur = Math.round(eased * pct);
-      if (pctEl) pctEl.textContent = cur + '%';
-      if (prog < 1) requestAnimationFrame(tick);
-    }
-    requestAnimationFrame(tick);
-  }, 600);
+  /* v16: Deprecated. Splash progress was intentionally removed. */
 }
+
 
 /* Global keyboard shortcuts */
 function initGlobalShortcuts() {
